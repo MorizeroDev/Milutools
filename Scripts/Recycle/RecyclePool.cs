@@ -115,7 +115,7 @@ namespace Milutools.Recycle
                                             $"Please register the prefab before calling Prepare.", nameof(prefab));
             }
 
-            DebugLog.Log($"Current pool size for {typeof(T).FullName}.{prefab}: {contexts[key].ObjectPool.Count}");
+            DebugLog.Log($"Current pool size for {key}: {contexts[key].GetObjectCount()}");
 
             contexts[key].Prepare(count);
         }

@@ -9,13 +9,15 @@ namespace Milutools.Recycle
     {
         public GameObject Prefab { get; internal set; }
         public string Name { get; internal set; }
-        public Stack<RecycleCollection> ObjectPool { get; } = new();
-        public List<RecycleCollection> AllObjects { get; } = new();
+        public IReadOnlyList<RecycleCollection> AllObjects => _allObjects;
         public PoolLifeCyclePolicy LifeCyclePolicy { get; internal set; }
         
         internal Type[] ComponentTypes;
         internal object ID;
-
+        
+        private Stack<RecycleCollection> _objectPool { get; } = new();
+        private List<RecycleCollection> _allObjects { get; } = new();
+        
         public T GetID<T>() where T : Enum
         {
             return (T)ID;
@@ -48,7 +50,7 @@ namespace Milutools.Recycle
 
             recyclableComponent.Initialize(this, collection);
             
-            AllObjects.Add(collection);
+            _allObjects.Add(collection);
             
             return collection;
         }
@@ -70,13 +72,13 @@ namespace Milutools.Recycle
         {
             for (var i = 0; i < count; i++)
             {
-                ObjectPool.Push(Produce());
+                _objectPool.Push(Produce());
             }
         }
 
         internal RecycleCollection Request()
         {
-            if (!ObjectPool.TryPop(out var collection))
+            if (!_objectPool.TryPop(out var collection))
             {
                 collection = Produce();
             }
@@ -88,7 +90,10 @@ namespace Milutools.Recycle
         internal void ReturnToPool(RecycleCollection collection)
         {
             collection.GameObject.SetActive(false);
-            ObjectPool.Push(collection);
+            _objectPool.Push(collection);
         }
+
+        internal int GetObjectCount()
+            => _objectPool.Count;
     }
 }

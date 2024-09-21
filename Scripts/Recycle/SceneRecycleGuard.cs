@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Milutools.Logger;
 using UnityEngine;
 
 namespace Milutools.Recycle
@@ -29,7 +30,7 @@ namespace Milutools.Recycle
         {
             if (DestroyRecords.Length > 0)
             {
-                Debug.LogError("Several recyclable objects were unexpectedly destroyed, this will break the recycle pool!\n" +
+                DebugLog.LogError("Several recyclable objects were unexpectedly destroyed, this will break the recycle pool!\n" +
                                DestroyRecords);
                 DestroyRecords.Clear();
             }
