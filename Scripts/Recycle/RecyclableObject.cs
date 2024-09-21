@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Milutools.Logger;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -30,7 +31,7 @@ namespace Milutools.Recycle
             _recycleCollection = collection;
             _objectHash = GetHashCode();
             
-            Debug.Log($"RecyclableObject created: Hash={_objectHash}, Name={gameObject.name}, PrefabName={context.Name}");
+            DebugLog.Log($"RecyclableObject created: Hash={_objectHash}, Name={gameObject.name}, PrefabName={context.Name}");
         }
         
         private void OnDestroy()
@@ -56,7 +57,7 @@ namespace Milutools.Recycle
                 SceneRecycleGuard.Instance.DestroyRecords.AppendLine($"Hash={_objectHash}, Name={gameObject.name}, PrefabName={_parentContext.Name}");
             }
             
-            Debug.Log($"RecyclableObject destroyed: Hash={_objectHash}, Name={gameObject.name}, PrefabName={_parentContext.Name}");
+            DebugLog.Log($"RecyclableObject destroyed: Hash={_objectHash}, Name={gameObject.name}, PrefabName={_parentContext.Name}");
 #endif
         }
 
@@ -65,12 +66,12 @@ namespace Milutools.Recycle
 #if UNITY_EDITOR
             if (IsPrefab)
             {
-                Debug.LogError("You are trying to recycle a prefab, this is not allowed.");
+                DebugLog.LogError("You are trying to recycle a prefab, this is not allowed.");
                 return;
             }
             if (_parentContext == null)
             {
-                Debug.LogError("You are trying to recycle an object that is not managed by the recycle pool, this is not allowed.");
+                DebugLog.LogError("You are trying to recycle an object that is not managed by the recycle pool, this is not allowed.");
                 return;
             }
 #endif
@@ -84,13 +85,13 @@ namespace Milutools.Recycle
 #if UNITY_EDITOR
             if (IsPrefab)
             {
-                Debug.LogWarning("The prefab for the recycle pool must be inactive.");
+                DebugLog.LogWarning("The prefab for the recycle pool must be inactive.");
                 return;
             }
             
             if (_parentContext == null)
             {
-                Debug.LogWarning("This object is not managed by the recycle pool, please use 'RecyclePool.Request' function to create the object.");
+                DebugLog.LogWarning("This object is not managed by the recycle pool, please use 'RecyclePool.Request' function to create the object.");
                 return;
             }
 #endif

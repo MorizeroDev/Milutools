@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Milutools.Logger;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -60,7 +61,7 @@ namespace Milutools.Recycle
             {
                 if (existing.Prefab == prefab && existing.LifeCyclePolicy == lifeCyclePolicy)
                 {
-                    Debug.LogWarning($"Prefab '{key}' is already registered.");
+                    DebugLog.LogWarning($"Prefab '{key}' is already registered.");
                     return;
                 }
                 
@@ -114,7 +115,7 @@ namespace Milutools.Recycle
                                             $"Please register the prefab before calling Prepare.", nameof(prefab));
             }
 
-            Debug.Log($"Current pool size for {typeof(T).FullName}.{prefab}: {contexts[key].ObjectPool.Count}");
+            DebugLog.Log($"Current pool size for {typeof(T).FullName}.{prefab}: {contexts[key].ObjectPool.Count}");
 
             contexts[key].Prepare(count);
         }
