@@ -7,13 +7,21 @@ using UnityEngine.Serialization;
 
 namespace Milutools.Recycle
 {
-    public class RecyclableObject : MonoBehaviour
+    public sealed class RecyclableObject : MonoBehaviour
     {
         [FormerlySerializedAs("RecycleTimeOut")]
+        [Tooltip("Automatically return the object to the pool after specific seconds.\n* -1 means disabling auto recycling.")]
         public float AutoRecycleTimeOut = -1f;
+        
         [FormerlySerializedAs("LinkComponent")] 
+        [Tooltip("Link a main component, then you can access it using RecyclePool.Request<T, E> function.\n" +
+                 "This would avoid using GetComponent function frequently as GetComponent function may made the program slow.")]
         public Component MainComponent;
+        
         [FormerlySerializedAs("DictComponent")] 
+        [Tooltip("Link more components, then you can access it using RecycleCollection.GetComponent function.\n" +
+                 "This would avoid using GetComponent function frequently as GetComponent function may made the program slow.\n" +
+                 "NOTICE: involving multiple components with a same type is not supported.")]
         public Component[] Components;
 
         internal bool Using { get; set; }
@@ -61,6 +69,9 @@ namespace Milutools.Recycle
 #endif
         }
 
+        /// <summary>
+        /// Return the object to the pool
+        /// </summary>
         public void WaitForRecycle()
         {
 #if UNITY_EDITOR
