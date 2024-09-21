@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Milutools.Logger;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -45,6 +46,14 @@ namespace Milutools.Recycle
 
             for (var i = 0; i < ComponentTypes.Length; i++)
             {
+#if UNITY_EDITOR
+                if (collection.Components.ContainsKey(ComponentTypes[i]))
+                {
+                    DebugLog.LogError($"You are trying to link multiple components with a same type '{ComponentTypes[i]}'\n" +
+                                      $", this is not supported. (ID: {ID})");
+                    continue;
+                }
+#endif
                 collection.Components.Add(ComponentTypes[i], recyclableComponent.Components[i]);
             }
 
