@@ -58,16 +58,17 @@ namespace Milutools.Recycle
         {
             CreateSceneRecycleGuard();
         }
-        
+
         /// <summary>
         /// To ensure the prefab is registered.
         /// You must first register it before requesting a recyclable object from the prefab.
         /// </summary>
         /// <param name="id">an enum value to identify a specific prefab</param>
         /// <param name="prefab">the prefab object</param>
+        /// <param name="minimumObjectCount">set the minimum object count and prepare specific amount of objects beforehand</param>
         /// <param name="lifeCyclePolicy">when the prefab and its objects get destroyed</param>
         public static void EnsurePrefabRegistered<T>(T id, GameObject prefab, 
-            uint minimumObjectCount = 0,
+            uint minimumObjectCount,
             PoolLifeCyclePolicy lifeCyclePolicy = PoolLifeCyclePolicy.DestroyOnLoad) where T : Enum
         {
             EnsureInitialized();
@@ -116,31 +117,8 @@ namespace Milutools.Recycle
             };
             
             contexts.Add(key, context);
-        }
-
-        /// <summary>
-        /// Prepare a specific amount of objects beforehand
-        /// </summary>
-        /// <param name="prefab">an enum value to identify a specific prefab</param>
-        /// <param name="count">how many objects should be prepared</param>
-        public static void Prepare<T>(T prefab, int count = 10) where T : Enum
-        {
-            // Debug.Log($"Preparing RecyclableObjects for prefab: {prefab}, count: {count}");
-            var key = new RecycleKey()
-            {
-                EnumType = typeof(T),
-                Value = prefab
-            };
             
-            if (!contexts.ContainsKey(key))
-            {
-                throw new ArgumentException($"Prefab '{key}' is not registered. " +
-                                            $"Please register the prefab before calling Prepare.", nameof(prefab));
-            }
-
-            DebugLog.Log($"Current pool size for {key}: {contexts[key].GetObjectCount()}");
-
-            contexts[key].Prepare(count);
+            context.Prepare(minimumObjectCount);
         }
 
         /// <summary>

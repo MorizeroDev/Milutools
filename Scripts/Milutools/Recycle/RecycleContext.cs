@@ -19,7 +19,7 @@ namespace Milutools.Recycle
         internal Type[] ComponentTypes;
         internal object ID;
         
-        internal Queue<uint> UsageRecords = new();
+        internal readonly Queue<uint> UsageRecords = new();
         internal uint PeriodUsage = 0;
         internal uint CurrentUsage = 0;
         
@@ -92,7 +92,7 @@ namespace Milutools.Recycle
             }
         }
 
-        internal void Prepare(int count)
+        internal void Prepare(uint count)
         {
             for (var i = 0; i < count; i++)
             {
