@@ -23,10 +23,20 @@ namespace Milutools.Recycle
         {
             return (T)ID;
         }
+
+        private Transform GetPoolParent()
+        {
+            return LifeCyclePolicy switch
+            {
+                PoolLifeCyclePolicy.Eternity => RecyclePool.poolParent,
+                PoolLifeCyclePolicy.DestroyOnLoad => RecyclePool.scenePoolParent,
+                _ => throw new ArgumentException()
+            };
+        }
         
         private RecycleCollection Produce()
         {
-            var gameObject = Object.Instantiate(Prefab);
+            var gameObject = Object.Instantiate(Prefab, GetPoolParent());
             gameObject.SetActive(false);
             
             var recyclableComponent = gameObject.GetComponent<RecyclableObject>();
@@ -72,7 +82,6 @@ namespace Milutools.Recycle
                 {
                     continue;
                 }
-                obj.Transform.SetParent(null);
                 obj.RecyclingController.WaitForRecycle();
             }
         }
@@ -98,6 +107,7 @@ namespace Milutools.Recycle
 
         internal void ReturnToPool(RecycleCollection collection)
         {
+            collection.Transform.SetParent(GetPoolParent());
             collection.GameObject.SetActive(false);
             _objectPool.Push(collection);
         }
