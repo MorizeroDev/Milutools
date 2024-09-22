@@ -9,6 +9,14 @@ namespace Milutools.Recycle
 {
     public static class RecyclePool
     {
+        /// <summary>
+        /// When enabled, the object pool will track the usage of objects and periodically release
+        /// the excess, infrequently used objects generated during peak usage.
+        /// However, if the number of prefabs in the pool is large,
+        /// enabling this option may cause stuttering.
+        /// </summary>
+        public static bool AutoReleaseUnusedObjects { get; set; } = true;
+        
         internal static readonly Dictionary<RecycleKey, RecycleContext> contexts = new();
 
         private static bool initialized = false;
@@ -25,7 +33,7 @@ namespace Milutools.Recycle
 
             initialized = true;
 
-            var go = new GameObject("[Object Pool]");
+            var go = new GameObject("[Object Pool]", typeof(RecycleGuard));
             GameObject.DontDestroyOnLoad(go);
             go.SetActive(true);
             poolParent = go.transform;
@@ -59,6 +67,7 @@ namespace Milutools.Recycle
         /// <param name="prefab">the prefab object</param>
         /// <param name="lifeCyclePolicy">when the prefab and its objects get destroyed</param>
         public static void EnsurePrefabRegistered<T>(T id, GameObject prefab, 
+            uint minimumObjectCount = 0,
             PoolLifeCyclePolicy lifeCyclePolicy = PoolLifeCyclePolicy.DestroyOnLoad) where T : Enum
         {
             EnsureInitialized();
@@ -102,6 +111,7 @@ namespace Milutools.Recycle
                 Name = $"{typeof(T).FullName}.{id}",
                 ID = id,
                 LifeCyclePolicy = lifeCyclePolicy,
+                MinimumObjectCount = minimumObjectCount,
                 ComponentTypes = recyclableObject.Components.Select(x => x.GetType()).ToArray()
             };
             

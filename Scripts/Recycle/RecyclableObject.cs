@@ -26,6 +26,7 @@ namespace Milutools.Recycle
 
         internal bool Using { get; set; }
         internal bool IsPrefab { get; set; } = false;
+        internal bool ReadyToDestroy = false;
         
         private RecycleCollection _recycleCollection;
         private RecycleContext _parentContext;
@@ -55,14 +56,21 @@ namespace Milutools.Recycle
             {
                 return;
             }
-            
-            if (_parentContext.LifeCyclePolicy == PoolLifeCyclePolicy.Eternity)
+
+            if (!ReadyToDestroy)
             {
-                throw new Exception($"RecyclableObject is unexpectedly destroyed, this has broken the recycle pool: Hash={_objectHash}, Name={gameObject.name}, PrefabName={_parentContext.Name}");
+                if (_parentContext.LifeCyclePolicy == PoolLifeCyclePolicy.Eternity)
+                {
+                    throw new Exception($"RecyclableObject is unexpectedly destroyed, this has broken the recycle pool: Hash={_objectHash}, Name={gameObject.name}, PrefabName={_parentContext.Name}");
+                }
+                else
+                {
+                    SceneRecycleGuard.Instance.DestroyRecords.AppendLine($"Hash={_objectHash}, Name={gameObject.name}, PrefabName={_parentContext.Name}");
+                }
             }
             else
             {
-                SceneRecycleGuard.Instance.DestroyRecords.AppendLine($"Hash={_objectHash}, Name={gameObject.name}, PrefabName={_parentContext.Name}");
+                _parentContext.CurrentUsage--;
             }
             
             DebugLog.Log($"RecyclableObject destroyed: Hash={_objectHash}, Name={gameObject.name}, PrefabName={_parentContext.Name}");

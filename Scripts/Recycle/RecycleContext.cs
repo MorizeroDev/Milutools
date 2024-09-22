@@ -10,14 +10,20 @@ namespace Milutools.Recycle
     {
         public GameObject Prefab { get; internal set; }
         public string Name { get; internal set; }
-        public IReadOnlyList<RecycleCollection> AllObjects => _allObjects;
+        public IReadOnlyList<RecycleCollection> AllObjects => Objects;
         public PoolLifeCyclePolicy LifeCyclePolicy { get; internal set; }
+        public uint MinimumObjectCount { get; internal set; }
+        
+        internal List<RecycleCollection> Objects { get; } = new();
         
         internal Type[] ComponentTypes;
         internal object ID;
         
+        internal Queue<uint> UsageRecords = new();
+        internal uint PeriodUsage = 0;
+        internal uint CurrentUsage = 0;
+        
         private Stack<RecycleCollection> _objectPool { get; } = new();
-        private List<RecycleCollection> _allObjects { get; } = new();
         
         public T GetID<T>() where T : Enum
         {
@@ -69,7 +75,7 @@ namespace Milutools.Recycle
 
             recyclableComponent.Initialize(this, collection);
             
-            _allObjects.Add(collection);
+            Objects.Add(collection);
             
             return collection;
         }
@@ -101,12 +107,14 @@ namespace Milutools.Recycle
                 collection = Produce();
             }
 
+            CurrentUsage++;
             collection.RecyclingController.Using = true;
             return collection;
         }
 
         internal void ReturnToPool(RecycleCollection collection)
         {
+            CurrentUsage--;
             collection.Transform.SetParent(GetPoolParent());
             collection.GameObject.SetActive(false);
             _objectPool.Push(collection);
