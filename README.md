@@ -7,7 +7,6 @@
 Unity Editor -> Package Manger -> Add package from git URL...
 
 ```
-# Milease Core
 https://github.com/MorizeroDev/Milutools.git
 ```
 
