@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Milutools.Recycle
 {
+    [AddComponentMenu("")]
     internal class SceneRecycleGuard : MonoBehaviour
     {
         public static SceneRecycleGuard Instance { get; private set; }

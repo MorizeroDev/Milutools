@@ -7,6 +7,7 @@ using UnityEngine.Serialization;
 
 namespace Milutools.Recycle
 {
+    [DisallowMultipleComponent]
     public sealed class RecyclableObject : MonoBehaviour
     {
         [FormerlySerializedAs("RecycleTimeOut")]

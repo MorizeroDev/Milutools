@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace Milutools.Recycle
 {
-    public class RecycleGuard : MonoBehaviour
+    [AddComponentMenu("")]
+    internal class RecycleGuard : MonoBehaviour
     {
         private const int usageTrackCount = 10;
         private float tick = 0f;
@@ -32,7 +33,7 @@ namespace Milutools.Recycle
 
             foreach (var context in RecyclePool.contexts.Values)
             {
-                var cnt = Math.Max(context.CurrentUsage, context.PeriodUsage / usageTrackCount);
+                var cnt = Math.Max(context.CurrentUsage, context.PeriodUsage / usageTrackCount) + context.MinimumObjectCount;
                 if (context.AllObjects.Count > cnt)
                 {
                     var collection = context.Request();
