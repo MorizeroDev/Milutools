@@ -37,13 +37,9 @@ namespace Milutools.Recycle
             GameObject.DontDestroyOnLoad(go);
             go.SetActive(true);
             poolParent = go.transform;
-            
-            CreateSceneRecycleGuard();
-            
-            SceneManager.sceneLoaded += SceneLoadedCallback;
         }
 
-        private static void CreateSceneRecycleGuard()
+        internal static void CreateSceneRecycleGuard()
         {
             if (scenePoolParent)
             {
@@ -52,11 +48,6 @@ namespace Milutools.Recycle
             var guard = new GameObject("[Scene Object Pool]", typeof(SceneRecycleGuard));
             guard.SetActive(true);
             scenePoolParent = guard.transform;
-        }
-
-        private static void SceneLoadedCallback(Scene scene, LoadSceneMode mode)
-        {
-            CreateSceneRecycleGuard();
         }
 
         /// <summary>
@@ -94,6 +85,10 @@ namespace Milutools.Recycle
 
             if (lifeCyclePolicy == PoolLifeCyclePolicy.DestroyOnLoad)
             {
+                if (!SceneRecycleGuard.Instance)
+                {
+                    CreateSceneRecycleGuard();
+                }
                 SceneRecycleGuard.Instance.PrefabInScene.Add(key);
             }
 
