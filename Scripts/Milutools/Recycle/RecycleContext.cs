@@ -34,21 +34,12 @@ namespace Milutools.Recycle
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Transform GetPoolParent()
         {
-            switch (LifeCyclePolicy)
+            return LifeCyclePolicy switch
             {
-                case PoolLifeCyclePolicy.Eternity:
-                    return RecyclePool.poolParent;
-                case PoolLifeCyclePolicy.DestroyOnLoad:
-#if UNITY_EDITOR
-                    if (!RecyclePool.scenePoolParent)
-                    {
-                        DebugLog.LogError("The scene pool container is unexpectedly destroyed!");
-                    }
-#endif
-                    return RecyclePool.scenePoolParent;
-                default:
-                    return null;
-            }
+                PoolLifeCyclePolicy.Eternity => RecyclePool.poolParent,
+                PoolLifeCyclePolicy.DestroyOnLoad => RecyclePool.scenePoolParent,
+                _ => null
+            };
         }
         
         private RecycleCollection Produce()

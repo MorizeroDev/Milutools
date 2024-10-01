@@ -1,4 +1,5 @@
 ﻿using System;
+using Milutools.Logger;
 using UnityEngine;
 
 namespace Milutools.Recycle
@@ -6,7 +7,7 @@ namespace Milutools.Recycle
     [AddComponentMenu("")]
     internal class RecycleGuard : MonoBehaviour
     {
-        private const int usageTrackCount = 10;
+        internal const int usageTrackCount = 10;
         private float tick = 0f;
         
         private void FixedUpdate()
