@@ -20,6 +20,7 @@ namespace Milutools.SceneRouter
         internal static SceneRouterNode RootNode, CurrentNode;
 
         internal static GameObject LoadingAnimatorPrefab;
+        internal static object Parameters;
         
         [RuntimeInitializeOnLoadMethod]
         public static void Setup()
@@ -67,6 +68,9 @@ namespace Milutools.SceneRouter
             }
             return result;
         }
+
+        public static T FetchParameters<T>()
+            => (T)Parameters;
         
         public static void SetLoadingAnimator(GameObject prefab)
         {
@@ -95,7 +99,7 @@ namespace Milutools.SceneRouter
         public static SceneRouterNode Node<T>(T identifier, string path, string scene) where T : Enum
             => Node(identifier, path, scene, false);
 
-        private static void GoTo(SceneRouterNode node, GameObject loadingPrefab = null)
+        private static SceneRouterContext GoTo(SceneRouterNode node, GameObject loadingPrefab = null)
         {
             var prefab = loadingPrefab ?? LoadingAnimatorPrefab;
             var go = Instantiate(prefab);
@@ -103,10 +107,13 @@ namespace Milutools.SceneRouter
             animator.TargetScene = node.Scene;
             go.SetActive(true);
 
+            Parameters = null;
             CurrentNode = node;
+
+            return new SceneRouterContext();
         }
         
-        public static void GoTo<T>(T scene, GameObject loadingPrefab = null) where T : Enum
+        public static SceneRouterContext GoTo<T>(T scene, GameObject loadingPrefab = null) where T : Enum
         {
             var key = SceneRouterIdentifier.Wrap(scene);
             if (!Nodes.ContainsKey(key))
@@ -114,15 +121,14 @@ namespace Milutools.SceneRouter
                 DebugLog.LogError($"The specific scene node '{key}' is not found.");
             }
             
-            GoTo(Nodes[key], loadingPrefab);
+            return GoTo(Nodes[key], loadingPrefab);
         }
 
-        public static void Back(GameObject loadingPrefab = null)
+        public static SceneRouterContext Back(GameObject loadingPrefab = null)
         {
             if (CurrentNode.Path.Length < 2)
             {
-                GoTo(RootNode, loadingPrefab);
-                return;
+                return GoTo(RootNode, loadingPrefab);
             }
             var path = CurrentNode.Path[..^2];
             var node = Nodes.Values.FirstOrDefault(x => x.Path.Equals(path));
@@ -131,7 +137,7 @@ namespace Milutools.SceneRouter
                 DebugLog.LogWarning($"The parent node of scene node '{CurrentNode}' is not configured, the router will navigate to the root node.");
                 node = RootNode;
             }
-            GoTo(node, loadingPrefab);
+            return GoTo(node, loadingPrefab);
         }
     }
 }
