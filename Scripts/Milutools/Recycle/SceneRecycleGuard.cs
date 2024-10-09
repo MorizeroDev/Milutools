@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Milutools.Logger;
+using Milutools.Milutools.General;
 using UnityEngine;
 
 namespace Milutools.Recycle
@@ -11,7 +12,7 @@ namespace Milutools.Recycle
     {
         public static SceneRecycleGuard Instance { get; private set; }
         
-        internal readonly List<RecycleKey> PrefabInScene = new();
+        internal readonly List<EnumIdentifier> PrefabInScene = new();
         internal readonly StringBuilder DestroyRecords = new();
 
         private void Awake()

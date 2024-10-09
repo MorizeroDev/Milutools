@@ -1,11 +1,12 @@
 ﻿using System;
+using Milutools.Milutools.General;
 using UnityEngine;
 
 namespace Milutools.SceneRouter
 {
     public class SceneRouterNode
     {
-        internal SceneRouterIdentifier Identifier;
+        internal EnumIdentifier Identifier;
         internal string[] Path;
         internal string Scene;
         internal bool IsRoot;

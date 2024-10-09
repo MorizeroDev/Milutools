@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Milutools.Logger;
+using Milutools.Milutools.General;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -17,7 +18,7 @@ namespace Milutools.Recycle
         /// </summary>
         public static bool AutoReleaseUnusedObjects { get; set; } = true;
         
-        internal static readonly Dictionary<RecycleKey, RecycleContext> contexts = new();
+        internal static readonly Dictionary<EnumIdentifier, RecycleContext> contexts = new();
 
         private static bool initialized = false;
 
@@ -64,11 +65,7 @@ namespace Milutools.Recycle
         {
             EnsureInitialized();
 
-            var key = new RecycleKey()
-            {
-                EnumType = typeof(T),
-                Value = id
-            };
+            var key = EnumIdentifier.Wrap(id);
             
             // 强制检查
             if (contexts.TryGetValue(key, out var existing))
@@ -125,11 +122,7 @@ namespace Milutools.Recycle
         /// <returns></returns>
         public static RecycleCollection RequestWithCollection<T>(T prefab, Transform parent = null) where T : Enum
         {
-            var key = new RecycleKey()
-            {
-                EnumType = typeof(T),
-                Value = prefab
-            };
+            var key = EnumIdentifier.Wrap(prefab);
             var collection = contexts[key].Request();
             collection.Transform.SetParent(parent, false);
             return collection;
@@ -178,11 +171,7 @@ namespace Milutools.Recycle
         /// <param name="prefab">an enum value to identify a specific prefab</param>
         public static void RecycleAllObjects<T>(T prefab) where T : Enum
         {
-            var key = new RecycleKey()
-            {
-                EnumType = typeof(T),
-                Value = prefab
-            };
+            var key = EnumIdentifier.Wrap(prefab);
             contexts[key].RecycleAllObjects();
         }
     }

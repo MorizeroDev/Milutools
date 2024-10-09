@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Milutools.Logger;
+using Milutools.Milutools.General;
 using Milutools.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -16,7 +17,7 @@ namespace Milutools.SceneRouter
         
         internal static bool Enabled = false;
         
-        internal readonly static Dictionary<SceneRouterIdentifier, SceneRouterNode> Nodes = new();
+        internal readonly static Dictionary<EnumIdentifier, SceneRouterNode> Nodes = new();
         internal static SceneRouterNode RootNode, CurrentNode;
 
         internal static GameObject LoadingAnimatorPrefab;
@@ -86,7 +87,7 @@ namespace Milutools.SceneRouter
         {
             return new SceneRouterNode()
             {
-                Identifier = SceneRouterIdentifier.Wrap(identifier),
+                Identifier = EnumIdentifier.Wrap(identifier),
                 Path = path.Split(PathSeparator),
                 Scene = scene,
                 IsRoot = isRoot
@@ -115,7 +116,7 @@ namespace Milutools.SceneRouter
         
         public static SceneRouterContext GoTo<T>(T scene, GameObject loadingPrefab = null) where T : Enum
         {
-            var key = SceneRouterIdentifier.Wrap(scene);
+            var key = EnumIdentifier.Wrap(scene);
             if (!Nodes.ContainsKey(key))
             {
                 DebugLog.LogError($"The specific scene node '{key}' is not found.");

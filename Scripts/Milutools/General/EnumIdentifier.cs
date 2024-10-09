@@ -1,17 +1,17 @@
 ﻿using System;
 
-namespace Milutools.SceneRouter
+namespace Milutools.Milutools.General
 {
-    internal struct SceneRouterIdentifier
+    internal struct EnumIdentifier
     {
         public int Value;
         public Type Type;
 
         public string Name { get; private set; }
 
-        internal static SceneRouterIdentifier Wrap<T>(T identifier) where T : Enum
+        internal static EnumIdentifier Wrap<T>(T identifier) where T : Enum
         {
-            return new SceneRouterIdentifier()
+            return new EnumIdentifier()
             {
                 Value = (int)(object)identifier,
                 Type = typeof(T),
