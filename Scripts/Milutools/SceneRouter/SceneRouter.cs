@@ -24,7 +24,7 @@ namespace Milutools.SceneRouter
         internal static object Parameters;
         
         [RuntimeInitializeOnLoadMethod]
-        public static void Setup()
+        internal static void Setup()
         {
             LoadingAnimatorPrefab = Resources.Load<GameObject>("BlackFade");
             
@@ -102,6 +102,11 @@ namespace Milutools.SceneRouter
 
         private static SceneRouterContext GoTo(SceneRouterNode node, GameObject loadingPrefab = null)
         {
+            if (!Enabled)
+            {
+                DebugLog.LogError("Scene router is not enabled, please configure the scene nodes first.");
+                return null;
+            }
             var prefab = loadingPrefab ?? LoadingAnimatorPrefab;
             var go = Instantiate(prefab);
             var animator = go.GetComponent<LoadingAnimator>();
