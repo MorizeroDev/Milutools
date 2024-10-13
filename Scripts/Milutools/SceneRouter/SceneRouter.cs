@@ -46,6 +46,13 @@ namespace Milutools.SceneRouter
                 }
                 Nodes.Add(node.Identifier, node);
             }
+
+            CurrentNode = nodes.FirstOrDefault(x => x.Scene == SceneManager.GetActiveScene().name);
+            if (CurrentNode == null)
+            {
+                DebugLog.LogWarning($"Current scene '{SceneManager.GetActiveScene().name}' is not included in this scene notes, " +
+                                    $"SceneRouter.Back() won't work properly in this scene.");
+            }
             
             Enabled = true;
         }
@@ -80,6 +87,7 @@ namespace Milutools.SceneRouter
             {
                 Identifier = EnumIdentifier.Wrap(identifier),
                 Path = path.Split(PathSeparator),
+                FullPath = path,
                 Scene = scene,
                 IsRoot = isRoot
             };
@@ -127,11 +135,11 @@ namespace Milutools.SceneRouter
             {
                 return GoTo(RootNode, loadingPrefab);
             }
-            var path = CurrentNode.Path[..^2];
-            var node = Nodes.Values.FirstOrDefault(x => x.Path.Equals(path));
+            var path = string.Join(PathSeparator, CurrentNode.Path[..^1]);
+            var node = Nodes.Values.FirstOrDefault(x => x.FullPath == path);
             if (node == null)
             {
-                DebugLog.LogWarning($"The parent node of scene node '{CurrentNode}' is not configured, the router will navigate to the root node.");
+                DebugLog.LogWarning($"The parent node of scene node '{CurrentNode.Identifier}' is not configured, the router will navigate to the root node.");
                 node = RootNode;
             }
             return GoTo(node, loadingPrefab);

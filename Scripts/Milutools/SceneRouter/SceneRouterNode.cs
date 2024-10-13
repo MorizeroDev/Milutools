@@ -8,6 +8,7 @@ namespace Milutools.SceneRouter
     {
         internal EnumIdentifier Identifier;
         internal string[] Path;
+        internal string FullPath;
         internal string Scene;
         internal bool IsRoot;
         
