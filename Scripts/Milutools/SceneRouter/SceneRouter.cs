@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Milutools.Logger;
 using Milutools.Milutools.General;
-using Milutools.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,25 +22,17 @@ namespace Milutools.SceneRouter
         internal static GameObject LoadingAnimatorPrefab;
         internal static object Parameters;
         
-        [RuntimeInitializeOnLoadMethod]
-        internal static void Setup()
+        public static void Setup(IEnumerable<SceneRouterNode> nodes)
         {
-            LoadingAnimatorPrefab = Resources.Load<GameObject>("BlackFade");
+            if (Enabled)
+            {
+                DebugLog.LogError("Duplicated setup is not allowed.");
+                return;
+            }
             
-            var method = ReflectionUtils.GetFirstStaticMethod<SceneRouterConfigAttribute>();
-            if (method == null)
-            {
-                DebugLog.LogWarning("No method has the 'SceneRouterConfig' attribute, the scene router will not be enabled.");
-                return;
-            }
+            LoadingAnimatorPrefab = Resources.Load<GameObject>("BlackFade");
 
-            if (method.ReturnType != typeof(SceneRouterNode[]))
-            {
-                DebugLog.LogError("Scene Router config method must return a 'SceneRouterNode[]' value.");
-                return;
-            }
-
-            foreach (var node in (SceneRouterNode[])method.Invoke(null, null))
+            foreach (var node in nodes)
             {
                 if (node.IsRoot)
                 {
