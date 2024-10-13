@@ -17,9 +17,11 @@ namespace Milutools.SceneRouter
         internal static bool Enabled = false;
         
         internal readonly static Dictionary<EnumIdentifier, SceneRouterNode> Nodes = new();
+        internal readonly static Dictionary<EnumIdentifier, LoadingAnimatorData> LoadingAnimators = new();
+        
         internal static SceneRouterNode RootNode, CurrentNode;
 
-        internal static GameObject LoadingAnimatorPrefab;
+        internal static LoadingAnimatorData LoadingAnimatorPrefab;
         internal static object Parameters;
 
         /// <summary>
@@ -27,7 +29,7 @@ namespace Milutools.SceneRouter
         /// </summary>
         public static bool QuitOnRootNode { get; set; } = true;
         
-        public static void Setup(IEnumerable<SceneRouterNode> nodes)
+        public static void Setup(SceneRouterConfig config)
         {
             if (Enabled)
             {
@@ -35,9 +37,12 @@ namespace Milutools.SceneRouter
                 return;
             }
             
-            LoadingAnimatorPrefab = Resources.Load<GameObject>("BlackFade");
+            LoadingAnimatorPrefab = new LoadingAnimatorData()
+            {
+                Prefab = Resources.Load<GameObject>("BlackFade")
+            };
 
-            foreach (var node in nodes)
+            foreach (var node in config.SceneNodes)
             {
                 if (node.IsRoot)
                 {
@@ -52,13 +57,18 @@ namespace Milutools.SceneRouter
                 Nodes.Add(node.Identifier, node);
             }
 
-            CurrentNode = nodes.FirstOrDefault(x => x.Scene == SceneManager.GetActiveScene().name);
+            CurrentNode = config.SceneNodes.FirstOrDefault(x => x.Scene == SceneManager.GetActiveScene().name);
             if (CurrentNode == null)
             {
                 DebugLog.LogWarning($"Current scene '{SceneManager.GetActiveScene().name}' is not included in this scene notes, " +
                                     $"SceneRouter.Back() won't work properly in this scene.");
             }
 
+            foreach (var animator in config.LoadingAnimators)
+            {
+                LoadingAnimators.Add(animator.Identifier, animator);
+            }
+            
 #if UNITY_EDITOR
             SceneManager.activeSceneChanged += (_, scene) =>
             {
@@ -81,7 +91,7 @@ namespace Milutools.SceneRouter
             var result = prefab.TryGetComponent<LoadingAnimator>(out _);
             if (!result)
             {
-                DebugLog.LogError("The loading prefab must has a LoadingAnimator component on its root object.");
+                DebugLog.LogError($"The loading prefab '{prefab.name}' must has a LoadingAnimator component on its root object.");
             }
             return result;
         }
@@ -89,14 +99,37 @@ namespace Milutools.SceneRouter
         public static T FetchParameters<T>()
             => (T)Parameters;
         
-        public static void SetLoadingAnimator(GameObject prefab)
+        public static void SetLoadingAnimator<T>(T animator) where T : Enum
         {
-            if (!ValidateLoadingPrefab(prefab))
+            var key = EnumIdentifier.Wrap(animator);
+            if (!LoadingAnimators.TryGetValue(key, out var loadingAnimator))
             {
+                DebugLog.LogError($"Specific loading animator '{key}' is not configured.");
                 return;
             }
 
-            LoadingAnimatorPrefab = prefab;
+            LoadingAnimatorPrefab = loadingAnimator;
+        }
+        
+        public static LoadingAnimatorData GetLoadingAnimator<T>(T animator) where T : Enum
+        {
+            var key = EnumIdentifier.Wrap(animator);
+            if (!LoadingAnimators.TryGetValue(key, out var loadingAnimator))
+            {
+                DebugLog.LogError($"Specific loading animator '{key}' is not configured.");
+                return null;
+            }
+
+            return loadingAnimator;
+        }
+
+        public static LoadingAnimatorData LoadingAnimator<T>(T identifier, GameObject prefab) where T : Enum
+        {
+            return new LoadingAnimatorData()
+            {
+                Identifier = EnumIdentifier.Wrap(identifier),
+                Prefab = prefab
+            };
         }
         
         private static SceneRouterNode Node<T>(T identifier, string path, string scene, bool isRoot) where T : Enum
@@ -117,15 +150,15 @@ namespace Milutools.SceneRouter
         public static SceneRouterNode Node<T>(T identifier, string path, string scene) where T : Enum
             => Node(identifier, path, scene, false);
 
-        private static SceneRouterContext GoTo(SceneRouterNode node, GameObject loadingPrefab = null)
+        private static SceneRouterContext GoTo(SceneRouterNode node, LoadingAnimatorData loadingAnimator = null)
         {
             if (!Enabled)
             {
                 DebugLog.LogError("Scene router is not enabled, please configure the scene nodes first.");
                 return null;
             }
-            var prefab = loadingPrefab ?? LoadingAnimatorPrefab;
-            var go = Instantiate(prefab);
+            var data = loadingAnimator ?? LoadingAnimatorPrefab;
+            var go = Instantiate(data.Prefab);
             var animator = go.GetComponent<LoadingAnimator>();
             animator.TargetScene = node.Scene;
             go.SetActive(true);
@@ -136,7 +169,7 @@ namespace Milutools.SceneRouter
             return new SceneRouterContext();
         }
         
-        public static SceneRouterContext GoTo<T>(T scene, GameObject loadingPrefab = null) where T : Enum
+        public static SceneRouterContext GoTo<T>(T scene, LoadingAnimatorData loadingAnimator = null) where T : Enum 
         {
             var key = EnumIdentifier.Wrap(scene);
             if (!Nodes.ContainsKey(key))
@@ -144,10 +177,10 @@ namespace Milutools.SceneRouter
                 DebugLog.LogError($"The specific scene node '{key}' is not found.");
             }
             
-            return GoTo(Nodes[key], loadingPrefab);
+            return GoTo(Nodes[key], loadingAnimator);
         }
 
-        public static SceneRouterContext Back(GameObject loadingPrefab = null)
+        public static SceneRouterContext Back(LoadingAnimatorData loadingAnimator = null)
         {
             if (CurrentNode.Path.Length < 2)
             {
@@ -157,7 +190,7 @@ namespace Milutools.SceneRouter
                     Application.Quit();
                     return null;
                 }
-                return GoTo(RootNode, loadingPrefab);
+                return GoTo(RootNode, loadingAnimator);
             }
             var path = string.Join(PathSeparator, CurrentNode.Path[..^1]);
             var node = Nodes.Values.FirstOrDefault(x => x.FullPath == path);
@@ -166,7 +199,7 @@ namespace Milutools.SceneRouter
                 DebugLog.LogWarning($"The parent node of scene node '{CurrentNode.Identifier}' is not configured, the router will navigate to the root node.");
                 node = RootNode;
             }
-            return GoTo(node, loadingPrefab);
+            return GoTo(node, loadingAnimator);
         }
     }
 }
