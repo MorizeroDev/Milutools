@@ -21,6 +21,11 @@ namespace Milutools.SceneRouter
 
         internal static GameObject LoadingAnimatorPrefab;
         internal static object Parameters;
+
+        /// <summary>
+        /// When calling the Back() method at the root node, should the game exit directly?
+        /// </summary>
+        public static bool QuitOnRootNode { get; set; } = true;
         
         public static void Setup(IEnumerable<SceneRouterNode> nodes)
         {
@@ -53,6 +58,19 @@ namespace Milutools.SceneRouter
                 DebugLog.LogWarning($"Current scene '{SceneManager.GetActiveScene().name}' is not included in this scene notes, " +
                                     $"SceneRouter.Back() won't work properly in this scene.");
             }
+
+#if UNITY_EDITOR
+            SceneManager.activeSceneChanged += (_, scene) =>
+            {
+                if (CurrentNode != null && CurrentNode.Scene == scene.name)
+                {
+                    return;
+                }
+                DebugLog.LogError("You seem to be trying to manage the scenes on your own, " +
+                                  "but this might hinder the normal functioning of the scene router, " +
+                                  "and it doesn't align with the design principles.");
+            };
+#endif
             
             Enabled = true;
         }
@@ -133,6 +151,12 @@ namespace Milutools.SceneRouter
         {
             if (CurrentNode.Path.Length < 2)
             {
+                if (QuitOnRootNode && CurrentNode == RootNode)
+                {
+                    DebugLog.LogWarning("At this point, the compiled game will terminate the process.");
+                    Application.Quit();
+                    return null;
+                }
                 return GoTo(RootNode, loadingPrefab);
             }
             var path = string.Join(PathSeparator, CurrentNode.Path[..^1]);
