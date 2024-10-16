@@ -122,11 +122,11 @@ namespace Milutools.Milutools.UI
         }
     }
     
-    public abstract class ManagedUIReturnValueOnly<R> : ManagedUI
+    public abstract class ManagedUIReturnValueOnly<T, R> : ManagedUI
     {
         public static void Open(Action<R> callback = null)
         {
-            UIManager.Get(typeof(ManagedUIReturnValueOnly<R>))
+            UIManager.Get(typeof(ManagedUIReturnValueOnly<T, R>))
                      .Open(callback);
         }
         
@@ -148,11 +148,11 @@ namespace Milutools.Milutools.UI
         public abstract void AboutToOpen();
     }
     
-    public abstract class ManagedUI<P> : ManagedUI
+    public abstract class ManagedUI<T, P> : ManagedUI
     {
         public static void Open(P parameter, Action callback = null)
         {
-            UIManager.Get(typeof(ManagedUI<P>))
+            UIManager.Get(typeof(ManagedUI<T, P>))
                 .SetParameter(parameter)
                 .Open(callback);
         }
@@ -175,11 +175,11 @@ namespace Milutools.Milutools.UI
         public abstract void AboutToOpen(P parameter);
     }
     
-    public abstract class ManagedUI<P, R> : ManagedUI
+    public abstract class ManagedUI<T, P, R> : ManagedUI
     {
         public static void Open(P parameter, Action<R> callback = null)
         {
-            UIManager.Get(typeof(ManagedUI<P, R>))
+            UIManager.Get(typeof(ManagedUI<T, P, R>))
                 .SetParameter(parameter)
                 .Open(callback);
         }

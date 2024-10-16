@@ -15,6 +15,7 @@ namespace Milutools.Milutools.UI
         internal EnumIdentifier Identifier;
         internal Type ParameterType = null;
         internal Type ReturnValueType = null;
+        internal Type TypeDefinition;
         internal GameObject Prefab;
         internal UIMode Mode = UIMode.Default;
 
@@ -50,31 +51,47 @@ namespace Milutools.Milutools.UI
                 throw new Exception($"UI '{identifier}' must have a ManagedUI component.");
             }
 
-            ui.Source = new UI()
+            var type = ui.GetType();
+            while (type != null && type.BaseType != null)
+            {
+                if (type.IsGenericType && type.BaseType == typeof(ManagedUI))
+                {
+                    break;
+                }
+                type = type.BaseType;
+            }
+            
+            var data = new UI()
             {
                 Identifier = EnumIdentifier.Wrap(identifier),
-                Prefab = prefab
+                Prefab = prefab,
+                TypeDefinition = type
             };
             prefab.SetActive(false);
+
+            var genericType = type.GetGenericTypeDefinition();
+            var args = type.GetGenericArguments();
             
-            return ui.Source;
+            if (genericType == typeof(ManagedUI<,>))
+            {
+                data.ParameterType = args[1];
+            }
+            else if (genericType == typeof(ManagedUI<,,>))
+            {
+                data.ParameterType = args[1];
+                data.ReturnValueType = args[2];
+            }
+            else if (genericType == typeof(ManagedUIReturnValueOnly<,>))
+            {
+                data.ReturnValueType = args[1];
+            }
+            
+            return data;
         }
 
         public UI SingletonMode()
         {
             Mode = UIMode.Singleton;
-            return this;
-        }
-        
-        public UI SetParameterType<T>()
-        {
-            ParameterType = typeof(T);
-            return this;
-        }
-
-        public UI SetReturnValueType<T>()
-        {
-            ReturnValueType = typeof(T);
             return this;
         }
     }

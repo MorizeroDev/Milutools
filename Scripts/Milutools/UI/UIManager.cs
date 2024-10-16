@@ -25,7 +25,15 @@ namespace Milutools.Milutools.UI
             foreach (var u in ui)
             {
                 UIDict.Add(u.Identifier, u);
-                UIDictInternal.Add(u.Prefab.GetComponent<ManagedUI>().GetType().GetGenericTypeDefinition(), u);
+                if (u.TypeDefinition == typeof(SimpleManagedUI))
+                {
+                    continue;
+                }
+
+                if (!UIDictInternal.TryAdd(u.TypeDefinition, u))
+                {
+                    DebugLog.LogError($"Duplicated UI type: {u.TypeDefinition.FullName}");
+                }
             }
 
             configured = true;
@@ -56,6 +64,12 @@ namespace Milutools.Milutools.UI
             if (!configured)
             {
                 DebugLog.LogError("UI manager has not been setup.");   
+                return null;
+            }
+
+            if (type == typeof(SimpleManagedUI))
+            {
+                DebugLog.LogError("Cannot open a SimpleManagedUI by this method.");   
                 return null;
             }
             
