@@ -30,53 +30,28 @@ namespace Milutools.Milutools.UI
         {
             canvas.sortingOrder = order;
         }
+
+        protected void OverrideInTransition(MilInstantAnimator animator)
+            => fadeInAnimator = animator;
+        
+        protected void OverrideOutTransition(MilInstantAnimator animator)
+            => fadeOutAnimator = animator;
+        
         
         private void Awake()
         {
             group = GetComponent<CanvasGroup>();
-
             canvas = GetComponent<Canvas>();
             
-            fadeInAnimator = 
-                new Action(() =>
-                    {
-                        opening = true;
-                        group.enabled = true;
-                    }).AsMileaseKeyEvent()
-                    .ThenOneByOne(
-                        group.Milease(nameof(group.alpha), 0f, 1f, 0.25f, 0f, EaseFunction.Quad, EaseType.Out),
-                        new Action(() =>
-                        {
-                            opening = false;
-                            group.enabled = false;
-                        }).AsMileaseKeyEvent()
-                    )
-                    .UsingResetMode(RuntimeAnimationPart.AnimationResetMode.ResetToInitialState);
-            
-            fadeOutAnimator = 
-                new Action(() =>
-                    {
-                        group.enabled = true;
-                    }).AsMileaseKeyEvent()
-                    .ThenOneByOne(
-                        group.Milease(nameof(group.alpha), 1f, 0f, 0.25f),
-                        new Action(() =>
-                        {
-                            CloseInternalCallback?.Invoke();
-                            closing = false;
-                            if (Source.Mode != UIMode.Singleton)
-                            {
-                                Destroy(gameObject);
-                            }
-                            else
-                            {
-                                gameObject.SetActive(false);
-                            }
-                        }).AsMileaseKeyEvent()
-                    )
-                    .UsingResetMode(RuntimeAnimationPart.AnimationResetMode.ResetToInitialState);
-            
             Begin();
+            
+            fadeInAnimator ??= 
+                group.Milease(nameof(group.alpha), 0f, 1f, 0.25f, 0f, EaseFunction.Quad, EaseType.Out)
+                    .UsingResetMode(RuntimeAnimationPart.AnimationResetMode.ResetToInitialState);
+            
+            fadeOutAnimator ??= 
+                group.Milease(nameof(group.alpha), 1f, 0f, 0.25f)
+                    .UsingResetMode(RuntimeAnimationPart.AnimationResetMode.ResetToInitialState);
         }
 
         private void OnEnable()
@@ -84,7 +59,14 @@ namespace Milutools.Milutools.UI
             closing = false;
             if (WithTransition)
             {
-                fadeInAnimator.PlayImmediately();
+                opening = true;
+                group.enabled = true;
+                group.alpha = 1f;
+                fadeInAnimator.PlayImmediately(() =>
+                {
+                    opening = false;
+                    group.enabled = false;
+                });
             }
             else
             {
@@ -98,6 +80,20 @@ namespace Milutools.Milutools.UI
 
         internal abstract void Open(object parameter);
 
+        private void OnClosed()
+        {
+            CloseInternalCallback?.Invoke();
+            closing = false;
+            if (Source.Mode != UIMode.Singleton)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                gameObject.SetActive(false);
+            }
+        }
+        
         internal void CloseInternal()
         {
             if (opening)
@@ -115,11 +111,13 @@ namespace Milutools.Milutools.UI
             if (WithTransition)
             {
                 closing = true;
-                fadeOutAnimator.PlayImmediately();
+                group.enabled = true;
+                group.alpha = 1f;
+                fadeOutAnimator.PlayImmediately(OnClosed);
             }
             else
             {
-                CloseInternalCallback?.Invoke();
+                OnClosed();
             }
         }
     }
@@ -135,9 +133,9 @@ namespace Milutools.Milutools.UI
         {
             CloseInternalCallback = () =>
             {
-                AboutToClose();
                 ((Action<R>)Callback)?.Invoke(returnValue);
             };
+            AboutToClose();
             CloseInternal();
         }
         
@@ -155,9 +153,9 @@ namespace Milutools.Milutools.UI
         {
             CloseInternalCallback = () =>
             {
-                AboutToClose();
                 ((Action)Callback)?.Invoke();
             };
+            AboutToClose();
             CloseInternal();
         }
         
@@ -175,9 +173,9 @@ namespace Milutools.Milutools.UI
         {
             CloseInternalCallback = () =>
             {
-                AboutToClose();
                 ((Action<R>)Callback)?.Invoke(returnValue);
             };
+            AboutToClose();
             CloseInternal();
         }
         
