@@ -9,6 +9,7 @@ using UnityEngine.UI;
 
 namespace Milutools.Milutools.UI
 {
+    [RequireComponent(typeof(Canvas))]
     [RequireComponent(typeof(CanvasGroup))]
     [RequireComponent(typeof(GraphicRaycaster))]
     public abstract class ManagedUI : MonoBehaviour
@@ -21,13 +22,21 @@ namespace Milutools.Milutools.UI
         private MilInstantAnimator fadeInAnimator, fadeOutAnimator;
         private GraphicRaycaster rayCaster;
         private CanvasGroup group;
+        private Canvas canvas;
 
         private bool closing = false;
+
+        internal void SetSortingOrder(int order)
+        {
+            canvas.sortingOrder = order;
+        }
         
         private void Awake()
         {
             rayCaster = GetComponent<GraphicRaycaster>();
             group = GetComponent<CanvasGroup>();
+
+            canvas = GetComponent<Canvas>();
             
             rayCaster.enabled = false;
             
@@ -89,7 +98,8 @@ namespace Milutools.Milutools.UI
                 DebugLog.LogWarning("Duplicated closing operation on UI.");
                 return;
             }
-            
+
+            UIManager.CurrentSortingOrder--;
             if (WithTransition)
             {
                 closing = true;

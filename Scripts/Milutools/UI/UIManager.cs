@@ -8,7 +8,8 @@ namespace Milutools.Milutools.UI
     public class UIManager
     {
         internal static readonly Dictionary<EnumIdentifier, UI> UIDict = new();
-
+        internal static int CurrentSortingOrder = 1000;
+        
         private static bool configured = false;
         
         public static void Setup(IEnumerable<UI> ui)
