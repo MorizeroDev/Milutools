@@ -56,12 +56,14 @@ namespace Milutools.Milutools.UI
             }
             var go = UI.Create();
             var ui = go.GetComponent<ManagedUI>();
+            ui.Source = UI;
             ui.WithTransition = WithTransition;
-            ui.SetSortingOrder(UIManager.CurrentSortingOrder);
-            UIManager.CurrentSortingOrder++;
             ui.Callback = callback;
             ui.Open(Parameter);
             go.SetActive(true);
+            
+            ui.SetSortingOrder(UIManager.CurrentSortingOrder);
+            UIManager.CurrentSortingOrder++;
         }
     }
 }

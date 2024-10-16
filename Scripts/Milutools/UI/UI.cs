@@ -49,6 +49,9 @@ namespace Milutools.Milutools.UI
             {
                 throw new Exception($"UI '{identifier}' must have a ManagedUI component.");
             }
+            
+            prefab.SetActive(false);
+            
             return new UI()
             {
                 Identifier = EnumIdentifier.Wrap(identifier),

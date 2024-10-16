@@ -11,20 +11,20 @@ namespace Milutools.Milutools.UI
 {
     [RequireComponent(typeof(Canvas))]
     [RequireComponent(typeof(CanvasGroup))]
-    [RequireComponent(typeof(GraphicRaycaster))]
     public abstract class ManagedUI : MonoBehaviour
     {
+        internal UI Source;
         internal Action CloseInternalCallback;
         internal object Callback;
 
         internal bool WithTransition;
         
         private MilInstantAnimator fadeInAnimator, fadeOutAnimator;
-        private GraphicRaycaster rayCaster;
         private CanvasGroup group;
         private Canvas canvas;
 
         private bool closing = false;
+        private bool opening = false;
 
         internal void SetSortingOrder(int order)
         {
@@ -33,20 +33,21 @@ namespace Milutools.Milutools.UI
         
         private void Awake()
         {
-            rayCaster = GetComponent<GraphicRaycaster>();
             group = GetComponent<CanvasGroup>();
 
             canvas = GetComponent<Canvas>();
             
-            rayCaster.enabled = false;
-            
             fadeInAnimator = 
-                new Action(() => group.enabled = true).AsMileaseKeyEvent()
+                new Action(() =>
+                    {
+                        opening = true;
+                        group.enabled = true;
+                    }).AsMileaseKeyEvent()
                     .ThenOneByOne(
-                        group.Milease(nameof(group.alpha), 0f, 1f, 0.5f, 0f, EaseFunction.Circ, EaseType.Out),
+                        group.Milease(nameof(group.alpha), 0f, 1f, 0.25f, 0f, EaseFunction.Quad, EaseType.Out),
                         new Action(() =>
                         {
-                            rayCaster.enabled = true;
+                            opening = false;
                             group.enabled = false;
                         }).AsMileaseKeyEvent()
                     )
@@ -55,17 +56,22 @@ namespace Milutools.Milutools.UI
             fadeOutAnimator = 
                 new Action(() =>
                     {
-                        rayCaster.enabled = false;
                         group.enabled = true;
                     }).AsMileaseKeyEvent()
                     .ThenOneByOne(
-                        group.Milease(nameof(group.alpha), 1f, 0f, 0.5f, 
-                            0f, EaseFunction.Circ, EaseType.Out),
+                        group.Milease(nameof(group.alpha), 1f, 0f, 0.25f),
                         new Action(() =>
                         {
-                            gameObject.SetActive(false);
                             CloseInternalCallback?.Invoke();
                             closing = false;
+                            if (Source.Mode != UIMode.Singleton)
+                            {
+                                Destroy(gameObject);
+                            }
+                            else
+                            {
+                                gameObject.SetActive(false);
+                            }
                         }).AsMileaseKeyEvent()
                     )
                     .UsingResetMode(RuntimeAnimationPart.AnimationResetMode.ResetToInitialState);
@@ -82,6 +88,7 @@ namespace Milutools.Milutools.UI
             }
             else
             {
+                opening = false;
                 group.enabled = false;
             }
         }
@@ -93,6 +100,11 @@ namespace Milutools.Milutools.UI
 
         internal void CloseInternal()
         {
+            if (opening)
+            {
+                return;
+            }
+            
             if (closing)
             {
                 DebugLog.LogWarning("Duplicated closing operation on UI.");
