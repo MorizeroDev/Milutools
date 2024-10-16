@@ -11,9 +11,14 @@ namespace Milutools.Milutools.UI
 
         public UIContext SetParameter<T>(T parameter)
         {
+            if (UI.ParameterType == null)
+            {
+                DebugLog.LogError($"UI '{UI.Identifier}' does not need a parameter.");
+                return this;
+            }
             if (typeof(T) != UI.ParameterType)
             {
-                DebugLog.LogError($"Parameter for {UI.Identifier} is incorrect, " +
+                DebugLog.LogError($"Parameter for UI '{UI.Identifier}' is incorrect, " +
                                   $"expected type: {UI.ParameterType.FullName}, actual: {typeof(T).FullName}");
                 return this;
             }
@@ -37,7 +42,7 @@ namespace Milutools.Milutools.UI
         {
             if (UI.ReturnValueType != null && callback != null)
             {
-                DebugLog.LogError($"Specific UI {UI.Identifier} has return value, use Open<T>() instead.");
+                DebugLog.LogError($"Specific UI '{UI.Identifier}' has return value, use Open<T>() instead.");
                 return;
             }
             OpenInternal(callback);
@@ -45,6 +50,10 @@ namespace Milutools.Milutools.UI
 
         private void OpenInternal(object callback)
         {
+            if (Parameter == null && UI.ParameterType != null)
+            {
+                DebugLog.LogWarning($"UI '{UI.Identifier}' requires {UI.ParameterType.FullName} parameter, but it is absent.");
+            }
             var go = UI.Create();
             var ui = go.GetComponent<ManagedUI>();
             ui.WithTransition = WithTransition;

@@ -39,7 +39,7 @@ namespace Milutools.Milutools.UI
             var key = EnumIdentifier.Wrap(identifier);
             if (!UIDict.ContainsKey(key))
             {
-                DebugLog.LogError($"Specific UI {key} was not registered, please configure the UI manager first.");
+                DebugLog.LogError($"Specific UI '{key}' was not registered, please configure the UI manager first.");
             }
 
             return new UIContext()
