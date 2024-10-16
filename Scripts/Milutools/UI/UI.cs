@@ -45,18 +45,19 @@ namespace Milutools.Milutools.UI
         
         public static UI FromPrefab<T>(T identifier, GameObject prefab) where T : Enum
         {
-            if (!prefab.TryGetComponent<ManagedUI>(out _))
+            if (!prefab.TryGetComponent<ManagedUI>(out var ui))
             {
                 throw new Exception($"UI '{identifier}' must have a ManagedUI component.");
             }
-            
-            prefab.SetActive(false);
-            
-            return new UI()
+
+            ui.Source = new UI()
             {
                 Identifier = EnumIdentifier.Wrap(identifier),
                 Prefab = prefab
             };
+            prefab.SetActive(false);
+            
+            return ui.Source;
         }
 
         public UI SingletonMode()

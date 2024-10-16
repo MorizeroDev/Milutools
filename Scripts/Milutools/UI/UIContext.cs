@@ -56,7 +56,6 @@ namespace Milutools.Milutools.UI
             }
             var go = UI.Create();
             var ui = go.GetComponent<ManagedUI>();
-            ui.Source = UI;
             ui.WithTransition = WithTransition;
             ui.Callback = callback;
             ui.Open(Parameter);

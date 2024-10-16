@@ -5,9 +5,11 @@ using Milutools.Milutools.General;
 
 namespace Milutools.Milutools.UI
 {
-    public class UIManager
+    public static class UIManager
     {
         internal static readonly Dictionary<EnumIdentifier, UI> UIDict = new();
+        internal static readonly Dictionary<Type, UI> UIDictInternal = new();
+        
         internal static int CurrentSortingOrder = 1000;
         
         private static bool configured = false;
@@ -23,6 +25,7 @@ namespace Milutools.Milutools.UI
             foreach (var u in ui)
             {
                 UIDict.Add(u.Identifier, u);
+                UIDictInternal.Add(u.Prefab.GetComponent<ManagedUI>().GetType().GetGenericTypeDefinition(), u);
             }
 
             configured = true;
@@ -45,6 +48,25 @@ namespace Milutools.Milutools.UI
             return new UIContext()
             {
                 UI = UIDict[key]
+            };
+        }
+        
+        internal static UIContext Get(Type type)
+        {
+            if (!configured)
+            {
+                DebugLog.LogError("UI manager has not been setup.");   
+                return null;
+            }
+            
+            if (!UIDictInternal.ContainsKey(type))
+            {
+                DebugLog.LogError($"Specific UI '{type.FullName}' was not registered, please configure the UI manager first.");
+            }
+
+            return new UIContext()
+            {
+                UI = UIDictInternal[type]
             };
         }
     }

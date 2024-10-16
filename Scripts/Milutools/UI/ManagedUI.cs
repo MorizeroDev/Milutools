@@ -30,7 +30,7 @@ namespace Milutools.Milutools.UI
         {
             canvas.sortingOrder = order;
         }
-
+        
         protected void OverrideInTransition(MilInstantAnimator animator)
             => fadeInAnimator = animator;
         
@@ -124,6 +124,12 @@ namespace Milutools.Milutools.UI
     
     public abstract class ManagedUIReturnValueOnly<R> : ManagedUI
     {
+        public static void Open(Action<R> callback = null)
+        {
+            UIManager.Get(typeof(ManagedUIReturnValueOnly<R>))
+                     .Open(callback);
+        }
+        
         internal override void Open(object parameter)
         {
             AboutToOpen();
@@ -144,6 +150,13 @@ namespace Milutools.Milutools.UI
     
     public abstract class ManagedUI<P> : ManagedUI
     {
+        public static void Open(P parameter, Action callback = null)
+        {
+            UIManager.Get(typeof(ManagedUI<P>))
+                .SetParameter(parameter)
+                .Open(callback);
+        }
+        
         internal override void Open(object parameter)
         {
             AboutToOpen((P)parameter);
@@ -164,6 +177,13 @@ namespace Milutools.Milutools.UI
     
     public abstract class ManagedUI<P, R> : ManagedUI
     {
+        public static void Open(P parameter, Action<R> callback = null)
+        {
+            UIManager.Get(typeof(ManagedUI<P, R>))
+                .SetParameter(parameter)
+                .Open(callback);
+        }
+        
         internal override void Open(object parameter)
         {
             AboutToOpen((P)parameter);
