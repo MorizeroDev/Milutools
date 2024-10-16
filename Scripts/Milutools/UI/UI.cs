@@ -40,6 +40,9 @@ namespace Milutools.Milutools.UI
             return Object.Instantiate(Prefab);
         }
 
+        public static UI FromResources<T>(T identifier, string prefabPath) where T : Enum
+            => FromPrefab(identifier, Resources.Load<GameObject>(prefabPath));
+        
         public static UI FromPrefab<T>(T identifier, GameObject prefab) where T : Enum
         {
             if (!prefab.TryGetComponent<ManagedUI>(out _))
