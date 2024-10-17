@@ -51,6 +51,16 @@ namespace Milutools.Recycle
             scenePoolParent = guard.transform;
         }
 
+        public static void SwapPrefab<T1, T2>(T1 id, T2 another) where T1 : Enum where T2 : Enum
+        {
+            EnsureInitialized();
+            
+            var key1 = EnumIdentifier.Wrap(id);
+            var key2 = EnumIdentifier.Wrap(another);
+
+            (contexts[key1], contexts[key2]) = (contexts[key2], contexts[key1]);
+        }
+        
         /// <summary>
         /// To ensure the prefab is registered.
         /// You must first register it before requesting a recyclable object from the prefab.
