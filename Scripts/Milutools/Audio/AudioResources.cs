@@ -11,8 +11,9 @@ namespace Milutools.Audio
     public abstract class AudioResources : ScriptableObject
     {
         internal abstract void SetupDictionary(Dictionary<EnumIdentifier, AudioClip> dictionary);
+        internal abstract AudioClip GetClip(int rawID);
     }
-    public class AudioResources<T> : AudioResources where T : Enum
+    public class AudioResources<T> : AudioResources where T : Enum, IConvertible
     {
         [Serializable]
         public class AudioItem
@@ -68,5 +69,8 @@ namespace Milutools.Audio
                 }
             }
         }
+
+        internal override AudioClip GetClip(int rawID)
+            => Items.First(x => (int)(object)x.Identifier == rawID)?.Clip;
     }
 }

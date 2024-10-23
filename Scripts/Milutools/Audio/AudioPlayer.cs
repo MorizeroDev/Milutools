@@ -75,14 +75,14 @@ namespace Milutools.Audio
                     player.AudioSource.clip = clip;
                     player.AudioSource.Play();
                     player.AudioSource.time = startPosition;
-                    player.Milease("volume", 0f, player.Volume, 0.5f, 
+                    player.AudioSource.Milease("volume", 0f, player.Volume, 1f, 
                         0f, EaseFunction.Quad, EaseType.Out)
                         .PlayImmediately();
                 }
                 else
                 {
                     player.TargetClip = clip;
-                    player.MileaseTo("volume", 0f, 0.5f, 0f, EaseFunction.Quad, EaseType.Out)
+                    player.AudioSource.MileaseTo("volume", 0f, 1f, 0f, EaseFunction.Quad, EaseType.Out)
                         .Then(new Action(() =>
                         {
                             player.AudioSource.clip = player.TargetClip;
@@ -90,7 +90,7 @@ namespace Milutools.Audio
                             player.AudioSource.time = startPosition;
                         }).AsMileaseKeyEvent())
                         .Then(
-                            player.Milease("volume", 0f, player.Volume, 0.5f, 
+                            player.AudioSource.Milease("volume", 0f, player.Volume, 1f, 
                                     0f, EaseFunction.Quad, EaseType.Out)
                         ).PlayImmediately();
                 }
