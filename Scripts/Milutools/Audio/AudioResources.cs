@@ -71,6 +71,6 @@ namespace Milutools.Audio
         }
 
         internal override AudioClip GetClip(int rawID)
-            => Items.First(x => (int)(object)x.Identifier == rawID)?.Clip;
+            => Items.FirstOrDefault(x => (int)(object)x.Identifier == rawID)?.Clip;
     }
 }
