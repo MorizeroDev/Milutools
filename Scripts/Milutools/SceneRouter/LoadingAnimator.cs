@@ -6,7 +6,7 @@ namespace Milutools.SceneRouter
 {
     public abstract class LoadingAnimator : MonoBehaviour
     {
-        public float Progress => loadingOperation.progress;
+        public float Progress => loadingOperation?.progress ?? 0f;
         public string TargetScene { get; internal set; }
 
         private AsyncOperation loadingOperation;
