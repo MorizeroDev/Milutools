@@ -45,6 +45,7 @@ namespace Milutools.Recycle
         private RecycleCollection Produce()
         {
             var gameObject = Object.Instantiate(Prefab, GetPoolParent());
+            gameObject.name = $"[RE{gameObject.GetInstanceID()}] {Name}";
             gameObject.SetActive(false);
             
             var recyclableComponent = gameObject.GetComponent<RecyclableObject>();
