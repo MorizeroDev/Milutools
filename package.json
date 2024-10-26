@@ -2,7 +2,7 @@
     "name": "com.morizero.milutools",
     "author": "Morizero",
     "displayName": "Milutools",
-    "version": "0.1.0",
+    "version": "0.6.0",
     "unity": "2021.3",
     "description": "A collection of commonly used Unity features."
 }
