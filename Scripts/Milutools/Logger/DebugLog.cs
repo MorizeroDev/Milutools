@@ -17,7 +17,7 @@ namespace Milutools.Logger
         
         private static LogLevel _logLevel = LogLevel.Info;
 
-        [RuntimeInitializeOnLoadMethod]
+        [InitializeOnEnterPlayMode]
         private static void ReadConfig()
         {
             _logLevel = (LogLevel)EditorPrefs.GetInt(LogLevelKey, (int)LogLevel.Warning);
