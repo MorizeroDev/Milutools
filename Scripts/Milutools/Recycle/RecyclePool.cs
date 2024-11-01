@@ -19,6 +19,7 @@ namespace Milutools.Recycle
         public static bool AutoReleaseUnusedObjects { get; set; } = true;
         
         internal static readonly Dictionary<EnumIdentifier, RecycleContext> contexts = new();
+        internal static readonly Dictionary<GameObject, RecyclableObject> objectDict = new();
 
         private static bool initialized = false;
 
@@ -49,6 +50,21 @@ namespace Milutools.Recycle
             var guard = new GameObject("[Scene Object Pool]", typeof(SceneRecycleGuard));
             guard.SetActive(true);
             scenePoolParent = guard.transform;
+        }
+
+        /// <summary>
+        /// Return the object back to the pool
+        /// </summary>
+        /// <param name="gameObject"></param>
+        public static void ReturnToPool(GameObject gameObject)
+        {
+#if UNITY_EDITOR
+            if (!objectDict.ContainsKey(gameObject))
+            {
+                DebugLog.LogError("The specific game object is not managed by the recycle pool.");
+            }
+#endif
+            objectDict[gameObject].ReturnToPool();
         }
         
         /// <summary>

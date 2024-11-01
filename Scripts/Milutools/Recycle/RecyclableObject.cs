@@ -73,15 +73,24 @@ namespace Milutools.Recycle
             {
                 _parentContext.CurrentUsage--;
             }
+
+            RecyclePool.objectDict.Remove(gameObject);
             
             DebugLog.Log($"RecyclableObject destroyed: Hash={_objectHash}, Name={gameObject.name}, PrefabName={_parentContext.Name}");
 #endif
         }
 
         /// <summary>
+        /// Use ReturnToPool() instead.
+        /// </summary>
+        [Obsolete]
+        public void WaitForRecycle()
+            => ReturnToPool();
+
+        /// <summary>
         /// Return the object to the pool
         /// </summary>
-        public void WaitForRecycle()
+        public void ReturnToPool()
         {
 #if UNITY_EDITOR
             if (IsPrefab)
@@ -124,7 +133,7 @@ namespace Milutools.Recycle
             recycleTick += Time.fixedDeltaTime;
             if (recycleTick >= AutoRecycleTimeOut)
             {
-                WaitForRecycle();
+                ReturnToPool();
                 recycleTick = 0f;
             }
         }

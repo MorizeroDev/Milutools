@@ -49,6 +49,7 @@ namespace Milutools.Recycle
             gameObject.SetActive(false);
             
             var recyclableComponent = gameObject.GetComponent<RecyclableObject>();
+            RecyclePool.objectDict.Add(gameObject, recyclableComponent);
             
             if (LifeCyclePolicy == PoolLifeCyclePolicy.Eternity)
             {
@@ -91,7 +92,7 @@ namespace Milutools.Recycle
                 {
                     continue;
                 }
-                obj.RecyclingController.WaitForRecycle();
+                obj.RecyclingController.ReturnToPool();
             }
         }
 
