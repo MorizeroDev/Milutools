@@ -18,6 +18,17 @@ namespace Milutools.Milutools.General
                 Name = typeof(T).FullName + "." + identifier
             };
         }
+        
+        public static EnumIdentifier WrapReflection(Enum identifier)
+        {
+            var type = identifier.GetType();
+            return new EnumIdentifier()
+            {
+                Value = (int)(object)identifier,
+                Type = type,
+                Name = type.FullName + "." + identifier
+            };
+        }
 
         public override string ToString()
         {
