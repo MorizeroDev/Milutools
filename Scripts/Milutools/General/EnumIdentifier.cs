@@ -2,14 +2,14 @@
 
 namespace Milutools.Milutools.General
 {
-    internal struct EnumIdentifier
+    public struct EnumIdentifier
     {
         public int Value;
         public Type Type;
 
         public string Name { get; private set; }
 
-        internal static EnumIdentifier Wrap<T>(T identifier) where T : Enum
+        public static EnumIdentifier Wrap<T>(T identifier) where T : Enum
         {
             return new EnumIdentifier()
             {
