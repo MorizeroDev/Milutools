@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Milutools.Logger;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 
 namespace Milutools.Recycle
@@ -25,6 +26,8 @@ namespace Milutools.Recycle
                  "NOTICE: involving multiple components with a same type is not supported.")]
         public Component[] Components;
 
+        public UnityEvent OnReset;
+        
         internal bool Using { get; set; }
         internal bool IsPrefab { get; set; } = false;
         internal bool ReadyToDestroy = false;

@@ -110,6 +110,10 @@ namespace Milutools.Recycle
             {
                 collection = Produce();
             }
+            else
+            {
+                collection.RecyclingController.OnReset?.Invoke();
+            }
 
             CurrentUsage++;
             collection.RecyclingController.Using = true;
