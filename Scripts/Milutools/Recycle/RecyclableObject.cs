@@ -92,6 +92,13 @@ namespace Milutools.Recycle
         /// </summary>
         public void ReturnToPool()
         {
+            if (!Using)
+            {
+#if UNITY_EDITOR
+                DebugLog.LogWarning("The object is not using, returning back to pool is not necessary.");
+#endif
+                return;
+            }
 #if UNITY_EDITOR
             if (IsPrefab)
             {
