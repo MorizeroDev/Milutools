@@ -19,6 +19,16 @@ namespace Milutools.Milutools.General
             };
         }
         
+        public static EnumIdentifier WrapType(Type type, Enum identifier)
+        {
+            return new EnumIdentifier()
+            {
+                Value = (int)(object)identifier,
+                Type = type,
+                Name = type.FullName + "." + identifier
+            };
+        }
+        
         public static EnumIdentifier WrapReflection(Enum identifier)
         {
             var type = identifier.GetType();
