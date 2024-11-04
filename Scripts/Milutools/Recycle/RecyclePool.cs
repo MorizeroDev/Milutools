@@ -134,6 +134,22 @@ namespace Milutools.Recycle
         /// including all associated components and related information.
         /// </summary>
         /// <param name="prefab">an enum value to identify a specific prefab</param>
+        /// <param name="handler">an function to do something with the collection</param>
+        /// <param name="parent">the parent of the retrieved object to be set</param>
+        /// <returns></returns>
+        public static void Request<T>(T prefab, Action<RecycleCollection> handler, Transform parent = null) where T : Enum
+        {
+            var key = EnumIdentifier.Wrap(prefab);
+            var collection = contexts[key].Request();
+            collection.Transform.SetParent(parent, false);
+            handler(collection);
+        }
+        
+        /// <summary>
+        /// Retrieve an object with the specified prefab ID from the pool and obtain its object set,
+        /// including all associated components and related information.
+        /// </summary>
+        /// <param name="prefab">an enum value to identify a specific prefab</param>
         /// <param name="parent">the parent of the retrieved object to be set</param>
         /// <returns></returns>
         public static RecycleCollection RequestWithCollection<T>(T prefab, Transform parent = null) where T : Enum
