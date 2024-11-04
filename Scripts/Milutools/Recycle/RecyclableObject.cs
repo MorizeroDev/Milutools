@@ -50,7 +50,6 @@ namespace Milutools.Recycle
         private void OnDestroy()
         {
 #if UNITY_EDITOR
-            Debug.Log("Destroy！！！ " + name);
             if (IsPrefab)
             {
                 throw new Exception(
