@@ -1,6 +1,7 @@
 ﻿using System;
 using Milutools.Logger;
 using UnityEngine;
+using Random = System.Random;
 
 namespace Milutools.Recycle
 {
@@ -29,13 +30,24 @@ namespace Milutools.Recycle
                     {
                         context.PeriodUsage -= context.UsageRecords.Dequeue();
                     }
+
+                    if (context.PeriodUsage == 0)
+                    {
+                        context.IdleTick++;
+                    }
+                    else
+                    {
+                        context.IdleTick = 0;
+                    }
                 }
             }
 
             foreach (var context in RecyclePool.contexts.Values)
             {
-                var cnt = Math.Max(context.CurrentUsage, context.PeriodUsage / usageTrackCount) + context.MinimumObjectCount;
-                if (context.AllObjects.Count > cnt)
+                var cnt = Math.Max(context.CurrentUsage, context.PeriodUsage / usageTrackCount) 
+                                                    + context.MinimumObjectCount 
+                                                    - Math.Max(context.IdleTick - 10, 0);
+                if (context.GetObjectCount() > cnt - context.CurrentUsage)
                 {
                     var collection = context.Request();
                     collection.RecyclingController.ReadyToDestroy = true;

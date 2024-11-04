@@ -126,7 +126,7 @@ namespace Milutools.Recycle
             
             contexts.Add(key, context);
             
-            context.Prepare(minimumObjectCount);
+            //context.Prepare(minimumObjectCount);
         }
 
         /// <summary>

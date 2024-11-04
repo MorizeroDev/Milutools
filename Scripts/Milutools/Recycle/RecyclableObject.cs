@@ -50,6 +50,7 @@ namespace Milutools.Recycle
         private void OnDestroy()
         {
 #if UNITY_EDITOR
+            Debug.Log("Destroy！！！ " + name);
             if (IsPrefab)
             {
                 throw new Exception(
@@ -74,7 +75,10 @@ namespace Milutools.Recycle
             }
             else
             {
-                _parentContext.CurrentUsage--;
+                if (Using)
+                {
+                    _parentContext.CurrentUsage--;
+                }
             }
 
             RecyclePool.objectDict.Remove(gameObject);

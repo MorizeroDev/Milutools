@@ -23,6 +23,7 @@ namespace Milutools.Recycle
         internal readonly Queue<uint> UsageRecords = new();
         internal uint PeriodUsage = 0;
         internal uint CurrentUsage = 0;
+        internal uint IdleTick = 0;
         
         private Stack<RecycleCollection> _objectPool { get; } = new();
         
