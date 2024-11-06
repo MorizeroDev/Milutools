@@ -102,7 +102,7 @@ namespace Milutools.Recycle
                 {
                     CreateSceneRecycleGuard();
                 }
-                SceneRecycleGuard.Instance.PrefabInScene.Add(key);
+                SceneRecycleGuard.PrefabInScene.Add(key);
             }
 
             var recyclableObject = prefab.GetComponent<RecyclableObject>();

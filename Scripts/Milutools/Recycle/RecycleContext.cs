@@ -105,6 +105,13 @@ namespace Milutools.Recycle
             }
         }
 
+        internal void Clear()
+        {
+            _objectPool.Clear();
+            Objects.Clear();
+            CurrentUsage = 0;
+        }
+
         internal RecycleCollection Request()
         {
             if (!_objectPool.TryPop(out var collection))

@@ -12,7 +12,7 @@ namespace Milutools.Recycle
     {
         public static SceneRecycleGuard Instance { get; private set; }
         
-        internal readonly List<EnumIdentifier> PrefabInScene = new();
+        internal static readonly List<EnumIdentifier> PrefabInScene = new();
         internal readonly StringBuilder DestroyRecords = new();
 
         private void Awake()
@@ -24,7 +24,7 @@ namespace Milutools.Recycle
         {
             foreach (var prefab in PrefabInScene)
             {
-                RecyclePool.contexts.Remove(prefab);
+                RecyclePool.contexts[prefab].Clear();
             }
         }
 
