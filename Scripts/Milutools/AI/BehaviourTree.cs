@@ -62,6 +62,8 @@ namespace Milutools.AI
         public bool Running { get; private set; }
 
         public event BehaviourFunction<T> OnFinished;
+
+        private bool stopped = false;
         
         private void Awake()
         {
@@ -89,11 +91,13 @@ namespace Milutools.AI
         public void Start()
         {
             Running = true;
+            stopped = false;
         }
 
         public void Stop()
         {
             Running = false;
+            stopped = true;
         }
 
         public void ResetTree()
@@ -110,7 +114,7 @@ namespace Milutools.AI
         
         private void UpdateTree()
         {
-            if (!Running && !Loop)
+            if (!Running && (!Loop || stopped))
             {
                 return;
             }
