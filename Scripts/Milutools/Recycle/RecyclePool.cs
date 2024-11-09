@@ -61,7 +61,9 @@ namespace Milutools.Recycle
 #if UNITY_EDITOR
             if (!objectDict.ContainsKey(gameObject))
             {
-                DebugLog.LogError("The specific game object is not managed by the recycle pool.");
+                DebugLog.LogWarning("The specific game object is not managed by the recycle pool.");
+                GameObject.Destroy(gameObject);
+                return;
             }
 #endif
             objectDict[gameObject].ReturnToPool();

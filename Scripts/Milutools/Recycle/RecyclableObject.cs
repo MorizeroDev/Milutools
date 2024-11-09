@@ -38,6 +38,10 @@ namespace Milutools.Recycle
         
         private float recycleTick = 0f;
         
+#if UNITY_EDITOR
+        private bool warned = false;
+#endif
+        
         internal void Initialize(RecycleContext context, RecycleCollection collection)
         {
             _parentContext = context;
@@ -113,7 +117,8 @@ namespace Milutools.Recycle
             }
             if (_parentContext == null)
             {
-                DebugLog.LogError("You are trying to recycle an object that is not managed by the recycle pool, this is not allowed.");
+                Destroy(gameObject);
+                DebugLog.LogWarning("You are trying to recycle an object that is not managed by the recycle pool, this is not allowed.");
                 return;
             }
 #endif
@@ -131,8 +136,9 @@ namespace Milutools.Recycle
                 return;
             }
             
-            if (_parentContext == null)
+            if (_parentContext == null && !warned)
             {
+                warned = true;
                 DebugLog.LogWarning("This object is not managed by the recycle pool, please use 'RecyclePool.Request' function to create the object.");
                 return;
             }
