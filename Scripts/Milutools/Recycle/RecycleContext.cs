@@ -114,6 +114,14 @@ namespace Milutools.Recycle
 
         internal RecycleCollection Request()
         {
+            if (LifeCyclePolicy == PoolLifeCyclePolicy.DestroyOnLoad)
+            {
+                if (!SceneRecycleGuard.Instance)
+                {
+                    RecyclePool.CreateSceneRecycleGuard();
+                }
+            }
+            
             if (!_objectPool.TryPop(out var collection))
             {
                 collection = Produce();
