@@ -123,7 +123,8 @@ namespace Milutools.Recycle
                 ID = id,
                 LifeCyclePolicy = lifeCyclePolicy,
                 MinimumObjectCount = minimumObjectCount,
-                ComponentTypes = recyclableObject.Components.Select(x => x.GetType()).ToArray()
+                ComponentTypes = recyclableObject.Components?.Where(x => x)
+                                                .Select(x => x.GetType()).ToArray() ?? Array.Empty<Type>()
             };
             
             contexts.Add(key, context);
