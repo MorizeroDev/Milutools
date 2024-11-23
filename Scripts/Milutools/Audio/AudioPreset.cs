@@ -25,11 +25,11 @@ namespace Milutools.Audio
 
         private void Start()
         {
-            if (BGM.Behaviour == AudioBehaviour.Replace)
+            if (BGM.Behaviour == AudioBehaviour.Replace && BGM.Resources)
             {
                 AudioManager.Player.SwitchClip(AudioPlayerType.BGMPlayer, BGM.Resources.GetClip(BGM.ID), true, BGM.StartTime);
             }
-            if (BGS.Behaviour == AudioBehaviour.Replace)
+            if (BGS.Behaviour == AudioBehaviour.Replace && BGS.Resources)
             {
                 AudioManager.Player.SwitchClip(AudioPlayerType.BGSPlayer, BGS.Resources.GetClip(BGS.ID), true, BGS.StartTime);
             }
