@@ -39,6 +39,12 @@ namespace Milutools.Audio
         public static void SetBGS<T>(T audio, bool transition = true, float startPosition = 0f) where T : Enum
             => SetAudio(AudioPlayerType.BGSPlayer, audio, transition, startPosition);
 
+        public static void StopBGM(bool transition = true)
+            => Player.SwitchClip(AudioPlayerType.BGMPlayer, null, transition, 0f);
+        
+        public static void StopBGS(bool transition = true)
+            => Player.SwitchClip(AudioPlayerType.BGSPlayer, null, transition, 0f);
+        
         public static float PlaySnd<T>(T audio) where T : Enum
         {
             if (!Enabled)
@@ -98,6 +104,7 @@ namespace Milutools.Audio
             if (audio == null)
             {
                 Player.SwitchClip(type, null, transition, startPosition);
+                return;
             }
             
             var key = EnumIdentifier.Wrap(audio);
