@@ -68,6 +68,36 @@ namespace Milutools.Recycle
 #endif
             objectDict[gameObject].ReturnToPool();
         }
+
+        /// <summary>
+        /// To unregister a prefab.
+        /// NOTE: this will dispose all the objects in the pool of the previous registered prefab.
+        /// </summary>
+        /// <param name="id">an enum value to identify a specific prefab</param>
+        public static void UnregisterPrefabAndDestroy<T>(T id) where T : Enum
+        {
+            EnsureInitialized();
+
+            var key = EnumIdentifier.Wrap(id);
+            if (contexts.TryGetValue(key, out var existing))
+            {
+                foreach (var obj in existing.Objects)
+                {
+                    obj.RecyclingController.ReadyToDestroy = true;
+                    UnityEngine.Object.Destroy(obj.GameObject);
+                }
+                contexts.Remove(key);
+                
+                if (existing.LifeCyclePolicy == PoolLifeCyclePolicy.DestroyOnLoad && SceneRecycleGuard.Instance)
+                {
+                    SceneRecycleGuard.PrefabInScene.Remove(key);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"Prefab {key} is not registered, no need to unregister.");
+            }
+        }
         
         /// <summary>
         /// To ensure the prefab is registered.
