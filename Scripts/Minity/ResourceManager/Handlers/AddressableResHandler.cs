@@ -55,7 +55,7 @@ namespace Minity.ResourceManager.Handlers
             {
                 return;
             }
-            Addressables.Release(_addressableHandle.Value);
+            //Addressables.Release(_addressableHandle.Value);
             _addressableHandle = null;
             _resource = null;
         }

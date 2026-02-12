@@ -43,7 +43,7 @@ namespace Minity.ResourceManager.Handlers
             
             if (_resource is not GameObject && _resource is not Component)
             {
-                //Resources.UnloadAsset(_resource);
+                Resources.UnloadAsset(_resource);
             }
             
             _resource = null;
