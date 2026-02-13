@@ -6,39 +6,39 @@ namespace Minity.ResourceManager.UsageDetector
 {
     public struct SceneUD : IUsageDetector
     {
-        private static uint curSceneChangeTick;
+        private static uint sceneVersion;
         private static bool initialized = false;
 
-        private uint bindSceneChangeTick;
+        private uint bindSceneVersion;
 
-        public uint GetSceneDetectIdx() => bindSceneChangeTick;
+        public uint GetSceneVersion() => bindSceneVersion;
         
         public void Initialize(object? bind)
         {
             if (!initialized)
             {
                 initialized = true;
-                SceneManager.sceneUnloaded += OnSceneUnloaded;
+                SceneManager.activeSceneChanged += OnSceneChanged;
                 Application.quitting += UnRegisterSceneEvent;
             }
 
-            bindSceneChangeTick = curSceneChangeTick;
+            bindSceneVersion = sceneVersion;
         }
 
         public bool IsUsing()
         {
-            return curSceneChangeTick == bindSceneChangeTick;
+            return sceneVersion == bindSceneVersion;
         }
 
         private static void UnRegisterSceneEvent()
         {
-            SceneManager.sceneUnloaded -= OnSceneUnloaded;
+            SceneManager.activeSceneChanged -= OnSceneChanged;
             Application.quitting -= UnRegisterSceneEvent;
         }
         
-        private static void OnSceneUnloaded(Scene scene)
+        private static void OnSceneChanged(Scene scene1, Scene scene2)
         {
-            curSceneChangeTick++;
+            sceneVersion++;
         }
         
         public IUsageDetector CombineDetector(IUsageDetector detector)

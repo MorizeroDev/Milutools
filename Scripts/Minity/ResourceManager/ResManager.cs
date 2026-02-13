@@ -225,7 +225,7 @@ namespace Minity.ResourceManager
             }
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             lock (_resources)
             {
@@ -242,10 +242,20 @@ namespace Minity.ResourceManager
                     {
                         continue;
                     }
-                    
+
                     resHandle.Handler.Release();
+                    _trackingRes[i] = null;
+                }
+                
+                for (var i = 0; i <= aliveTill; i++)
+                {
+                    if (_trackingRes[i] != null)
+                    {
+                        continue;
+                    }
+                    
                     (_trackingRes[i], _trackingRes[aliveTill]) = (_trackingRes[aliveTill], _trackingRes[i]);
-                    _resources.Remove(resHandle.UriStr);
+                    _resources.Remove(_trackingRes[i].UriStr);
                     i--;
                     aliveTill--;
                 }

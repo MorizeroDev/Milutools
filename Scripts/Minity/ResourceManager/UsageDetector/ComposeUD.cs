@@ -39,7 +39,7 @@ namespace Minity.ResourceManager.UsageDetector
         {
             if (detector is SceneUD su)
             {
-                if (!_detectedScenes.Add(su.GetSceneDetectIdx()))
+                if (!_detectedScenes.Add(su.GetSceneVersion()))
                 {
                     return this;
                 }
