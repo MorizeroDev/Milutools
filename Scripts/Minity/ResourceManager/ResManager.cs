@@ -233,7 +233,7 @@ namespace Minity.ResourceManager
                 for (var i = 0; i <= aliveTill; i++)
                 {
                     var resHandle = _trackingRes[i];
-                    if (resHandle.LoadTask != null)
+                    if (resHandle == null || resHandle.LoadTask != null)
                     {
                         continue;
                     }
@@ -244,6 +244,7 @@ namespace Minity.ResourceManager
                     }
 
                     resHandle.Handler.Release();
+                    _resources.Remove(resHandle.UriStr);
                     _trackingRes[i] = null;
                 }
                 
@@ -255,7 +256,6 @@ namespace Minity.ResourceManager
                     }
                     
                     (_trackingRes[i], _trackingRes[aliveTill]) = (_trackingRes[aliveTill], _trackingRes[i]);
-                    _resources.Remove(_trackingRes[i].UriStr);
                     i--;
                     aliveTill--;
                 }
