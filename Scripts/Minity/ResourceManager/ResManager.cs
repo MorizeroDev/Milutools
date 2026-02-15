@@ -103,6 +103,14 @@ namespace Minity.ResourceManager
             }
         }
         
+        /// <summary>
+        /// <para><b>We recommend integrating Minity with asset management systems such as Addressables.</b></para>
+        /// <para>Please note that the Resources system <b>does not expose any reference counting API.</b>
+        /// When you call `Resources.Unload` to unload an asset, Unity will <b>forcibly remove</b> it from memory,
+        /// regardless of whether there are still existing references to it.</para>
+        /// This means that you <b>should not</b> bind an asset from the Resources folder through Unity’s serialization system
+        /// while also attempting to manage its lifecycle with Minity.
+        /// </summary>
         public async Task<T> LoadAsync<T>(string uriStr, IUsageDetector detector, int timeOut = DEFAULT_RES_TIME_OUT) where T : Object
         {
             var handle = GetOrRegister(uriStr);
@@ -129,6 +137,14 @@ namespace Minity.ResourceManager
             return handle.GetResource<T>();
         }
 
+        /// <summary>
+        /// <para><b>We recommend integrating Minity with asset management systems such as Addressables.</b></para>
+        /// <para>Please note that the Resources system <b>does not expose any reference counting API.</b>
+        /// When you call `Resources.Unload` to unload an asset, Unity will <b>forcibly remove</b> it from memory,
+        /// regardless of whether there are still existing references to it.</para>
+        /// This means that you <b>should not</b> bind an asset from the Resources folder through Unity’s serialization system
+        /// while also attempting to manage its lifecycle with Minity.
+        /// </summary>
         public T Load<T>(string uriStr, IUsageDetector detector, int timeOut = DEFAULT_RES_TIME_OUT) where T : Object
         {
             var handle = GetOrRegister(uriStr);
@@ -230,7 +246,7 @@ namespace Minity.ResourceManager
             lock (_resources)
             {
                 var aliveTill = _trackingRes.Count - 1;
-                for (var i = 0; i <= aliveTill; i++)
+                for (var i = aliveTill; i >= 0; i--)
                 {
                     var resHandle = _trackingRes[i];
                     if (resHandle == null || resHandle.LoadTask != null)
