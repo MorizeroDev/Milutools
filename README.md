@@ -1,6 +1,6 @@
 # Minity
 
-**Mi**lthm u**nity** framework, a Unity extension framework that includes features such as object pooling, scene routing, UI manager, and behavior trees.
+A Unity extension framework that includes features such as object pooling, scene routing, UI manager, and behavior trees.
 
 ## **Setup**
 
